@@ -84,6 +84,12 @@ namespace NzbDrone.Core.Music
                 return;
             }
 
+            if (tuple.Item2.AlbumReleases.Value.Count == 0)
+            {
+                _logger.Debug($"{album} has no valid releases, removing.");
+                _albumService.DeleteMany(new List<Album> { album });
+            }
+
             var remoteMetadata = tuple.Item3.DistinctBy(x => x.ForeignArtistId).ToList();
             var existingMetadata = _artistMetadataRepository.FindById(remoteMetadata.Select(x => x.ForeignArtistId).ToList());
             var updateMetadataList = new List<ArtistMetadata>();
